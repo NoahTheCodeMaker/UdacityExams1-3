@@ -20,10 +20,12 @@ collections.Callable = collections.abc.Callable
 app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/todoapp'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/fyurr'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+db.create_all()
 
 # Models.
 
