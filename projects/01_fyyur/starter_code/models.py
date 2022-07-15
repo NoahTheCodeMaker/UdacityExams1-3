@@ -7,7 +7,7 @@
 from app import db
 
 class Venue(db.Model):
-    __tablename__ = 'Venue'
+    __tablename__ = 'venue'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
@@ -17,13 +17,13 @@ class Venue(db.Model):
     phone = db.Column(db.String(120), nullable=True)
     image_link = db.Column(db.String(500), nullable=True)
     facebook_link = db.Column(db.String(120), nullable=True)
-    genres = db.Column(db.Array(db.String), nullable=False)
+    genres = db.Column(db.ARRAY(db.String), nullable=False)
     website_link = db.Column(db.String(120), nullable=True)
-    seeking_talent = db.column(db.Boolean, nullable=True)
-    seeking_description = db.column(db.String, nullable=False)
+    seeking_talent = db.column(db.Boolean)
+    seeking_description = db.column(db.String)
 
 class Artist(db.Model):
-    __tablename__ = 'Artist'
+    __tablename__ = 'artist'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
@@ -32,10 +32,10 @@ class Artist(db.Model):
     phone = db.Column(db.String(120), nullable=True)
     image_link = db.Column(db.String(500), nullable=True)
     facebook_link = db.Column(db.String(120), nullable=True)
-    genres = db.Column(db.Array(db.String), nullable=False)
+    genres = db.Column(db.ARRAY(db.String), nullable=False)
     website_link = db.Column(db.String(120), nullable=True)
-    seeking_venue = db.column(db.Boolean, nullable=True)
-    seeking_description = db.column(db.String, nullable=False)
+    seeking_venue = db.column(db.Boolean)
+    seeking_description = db.column(db.String)
 
 Show = db.Table(
     "show",
