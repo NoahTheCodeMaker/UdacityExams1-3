@@ -27,37 +27,9 @@ migrate = Migrate(app, db)
 
 db.create_all()
 
-# Models.
+# Models
 
-class Venue(db.Model):
-    __tablename__ = 'Venue'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    address = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120))
-
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
-
-class Artist(db.Model):
-    __tablename__ = 'Artist'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120))
-
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
-
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+from models import Venue, Artist, Show
 
 # Filters.
 
@@ -206,7 +178,7 @@ def show_venue(venue_id):
   return render_template('pages/show_venue.html', venue=data)
 
 #  Create Venue
-#  ----------------------------------------------------------------
+
 
 @app.route('/venues/create', methods=['GET'])
 def create_venue_form():
@@ -235,7 +207,7 @@ def delete_venue(venue_id):
   return None
 
 #  Artists
-#  ----------------------------------------------------------------
+
 @app.route('/artists')
 def artists():
   # TODO: replace with real data returned from querying the database
@@ -345,7 +317,7 @@ def show_artist(artist_id):
   return render_template('pages/show_artist.html', artist=data)
 
 #  Update
-#  ----------------------------------------------------------------
+
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
   form = ArtistForm()
@@ -399,7 +371,6 @@ def edit_venue_submission(venue_id):
   return redirect(url_for('show_venue', venue_id=venue_id))
 
 #  Create Artist
-#  ----------------------------------------------------------------
 
 @app.route('/artists/create', methods=['GET'])
 def create_artist_form():
@@ -420,7 +391,6 @@ def create_artist_submission():
 
 
 #  Shows
-#  ----------------------------------------------------------------
 
 @app.route('/shows')
 def shows():
@@ -501,17 +471,8 @@ if not app.debug:
     app.logger.addHandler(file_handler)
     app.logger.info('errors')
 
-#----------------------------------------------------------------------------#
 # Launch.
-#----------------------------------------------------------------------------#
 
 # Default port:
 if __name__ == '__main__':
     app.run()
-
-# Or specify port manually:
-'''
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
-'''
