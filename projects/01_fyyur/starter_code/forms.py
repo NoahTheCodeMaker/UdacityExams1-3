@@ -7,7 +7,7 @@ import re
 
 def is_valid_phone(number):
     regex = re.compile('^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$')
-    return regex.match(number)
+    return regex.match(str(number))
 
 class ShowForm(Form):
     artist_id = StringField(
