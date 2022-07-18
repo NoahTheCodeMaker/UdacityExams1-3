@@ -19,8 +19,8 @@ class Venue(db.Model):
     facebook_link = db.Column(db.String(120), nullable=True)
     genres = db.Column(db.ARRAY(db.String), nullable=False)
     website_link = db.Column(db.String(120), nullable=True)
-    seeking_talent = db.column(db.Boolean)
-    seeking_description = db.column(db.String)
+    seeking_talent = db.Column(db.Boolean, nullable=True)
+    seeking_description = db.Column(db.String, nullable=True)
 
 class Artist(db.Model):
     __tablename__ = 'artist'
@@ -34,8 +34,8 @@ class Artist(db.Model):
     facebook_link = db.Column(db.String(120), nullable=True)
     genres = db.Column(db.ARRAY(db.String), nullable=False)
     website_link = db.Column(db.String(120), nullable=True)
-    seeking_venue = db.column(db.Boolean)
-    seeking_description = db.column(db.String)
+    seeking_venue = db.Column(db.Boolean, nullable=True)
+    seeking_description = db.Column(db.String, nullable=True)
 
 Show = db.Table(
     "show",
