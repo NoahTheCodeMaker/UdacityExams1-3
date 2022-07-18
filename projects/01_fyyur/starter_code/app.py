@@ -3,7 +3,7 @@
 import json
 import dateutil.parser
 import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for
+from flask import Flask, render_template, request, Response, flash, redirect, url_for, abort
 from flask_moment import Moment
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -11,7 +11,7 @@ import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
-import collections
+import collections, sys
 import collections.abc
 collections.Callable = collections.abc.Callable
 
@@ -187,14 +187,42 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-  # TODO: insert form data as a new Venue record in the db, instead
-  # TODO: modify data to be the data object returned from db insertion
+  form = VenueForm(request.files, meta={'crsf': False})
+  if form.validate():
+    error = False
+    try:
+      name = form.name
+      city = form.city
+      state = form.state
+      address = form.address
+      phone = form.phone
+      image_link = form.image_link
+      genres = form.genres
+      facebook_link = form.facebook_link
+      website_link = form.website_link
+      seeking_talent = form.seeking_talent
+      seeking_description = form.seeking_description
+      newVenue = Venue(name=name, city=city, state=state,
+      address=address, phone=phone, image_link=image_link, 
+      facebook_link=facebook_link, genres=genres, website_link=website_link,
+      seeking_talent=seeking_talent, seeking_description=seeking_description)
+      db.session.add(newVenue)
+      db.session.commit()
+      flash('Venue ' + request.form['name'] + ' was successfully listed!')
+    except:
+      error = True
+      db.session.rollback()
+      print(sys.exc_info())
+    finally:
+      db.session.close()
+      if error == True:
+            abort(400)
+  else:
+    message = []
+    for field, err in form.errors.items():
+        message.append(field + ' ' + '|'.join(err))
+    flash('Something Went Wrong! - ' + str(message))
 
-  # on successful db insert, flash success
-  flash('Venue ' + request.form['name'] + ' was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
-  # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
   return render_template('pages/home.html')
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
