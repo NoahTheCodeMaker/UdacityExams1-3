@@ -10,6 +10,9 @@ def is_valid_phone(number):
     return regex.match(str(number))
 
 class ShowForm(Form):
+    class Meta:
+        csrf = False
+    
     artist_id = StringField(
         'artist_id', validators=[DataRequired()]
     )
