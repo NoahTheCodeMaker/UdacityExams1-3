@@ -11,10 +11,10 @@ def is_valid_phone(number):
 
 class ShowForm(Form):
     artist_id = StringField(
-        'artist_id', validators=[DataRequired]
+        'artist_id', validators=[DataRequired()]
     )
     venue_id = StringField(
-        'venue_id', validators=[DataRequired]
+        'venue_id', validators=[DataRequired()]
     )
     start_time = DateTimeField(
         'start_time',
