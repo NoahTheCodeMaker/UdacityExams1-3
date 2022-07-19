@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask_wtf import Form
 from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField, BooleanField
-from wtforms.validators import DataRequired, AnyOf, URL
+from wtforms.validators import DataRequired
 from enums import Genre, State
 import re
 
@@ -11,10 +11,10 @@ def is_valid_phone(number):
 
 class ShowForm(Form):
     artist_id = StringField(
-        'artist_id'
+        'artist_id', validators=[DataRequired]
     )
     venue_id = StringField(
-        'venue_id'
+        'venue_id', validators=[DataRequired]
     )
     start_time = DateTimeField(
         'start_time',
@@ -69,12 +69,9 @@ class VenueForm(Form):
     )
 
 class ArtistForm(Form):
-    def validate_phone(self):
-        rv = Form.validate(self)
-        if not rv:
-            return False
-        if not is_valid_phone(self.phone.data):
-            self.phone.errors.append('Invalid phone.')
+    def validate_phone(form, field):
+        if not is_valid_phone(field.data):
+            field.errors.append('Invalid Phone Number.')
             return False
         return True
     
