@@ -1,17 +1,16 @@
 # Imports
 
-import json
+import traceback
 import dateutil.parser
 import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for, abort
+from flask import Flask, render_template, request, flash, redirect, url_for, abort
 from flask_moment import Moment
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 import logging
 from logging import Formatter, FileHandler
-from flask_wtf import Form
 from forms import *
-import collections, sys
+import collections
 import collections.abc
 collections.Callable = collections.abc.Callable
 
@@ -212,7 +211,7 @@ def create_venue_submission():
     except:
       error = True
       db.session.rollback()
-      print(sys.exc_info())
+      traceback.print_exc()
     finally:
       db.session.close()
       if error == True:
@@ -432,7 +431,7 @@ def create_artist_submission():
     except:
       error = True
       db.session.rollback()
-      print(sys.exc_info())
+      traceback.print_exc()
     finally:
       db.session.close()
       if error == True:
@@ -489,22 +488,40 @@ def shows():
   }]
   return render_template('pages/shows.html', shows=data)
 
+# renders form. do not touch.
 @app.route('/shows/create')
 def create_shows():
-  # renders form. do not touch.
   form = ShowForm()
   return render_template('forms/new_show.html', form=form)
 
 @app.route('/shows/create', methods=['POST'])
 def create_show_submission():
-  # called to create new shows in the db, upon submitting new show listing form
-  # TODO: insert form data as a new Show record in the db, instead
-
-  # on successful db insert, flash success
-  flash('Show was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Show could not be listed.')
-  # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+  form = ShowForm(request.form, meta={'crsf': False})
+  if form.validate():
+    error = False
+    try:
+      artist_id = form.artist_id.data
+      venue_id = form.venue_id.data
+      time = form.start_time.data
+      new_show = Show(artist_id=artist_id, 
+      venue_id=venue_id, time=time)
+      db.session.add(new_show)
+      db.session.commit()
+      flash('Show was successfully listed!')
+    except Exception as e:
+      error = True
+      print(e)
+      db.session.rollback()
+      traceback.print_exc()
+    finally:
+      db.session.close()
+      if error == True:
+        abort(400)
+  else:
+    message = []
+    for field, err in form.errors.items():
+        message.append(field + ' ' + '|'.join(err))
+    flash('Something Went Wrong! - ' + str(message))
   return render_template('pages/home.html')
 
 @app.errorhandler(404)
@@ -514,7 +531,6 @@ def not_found_error(error):
 @app.errorhandler(500)
 def server_error(error):
     return render_template('errors/500.html'), 500
-
 
 if not app.debug:
     file_handler = FileHandler('error.log')
@@ -526,8 +542,7 @@ if not app.debug:
     app.logger.addHandler(file_handler)
     app.logger.info('errors')
 
-# Launch.
+# Launch on Default port:
 
-# Default port:
 if __name__ == '__main__':
     app.run()
