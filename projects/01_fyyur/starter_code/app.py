@@ -189,6 +189,7 @@ def create_venue_submission():
   form = VenueForm(request.form, meta={'crsf': False})
   if form.validate():
     error = False
+    data = {}
     try:
       name = form.name.data
       city = form.city.data
@@ -207,6 +208,7 @@ def create_venue_submission():
       seeking_talent=seeking_talent, seeking_description=seeking_description)
       db.session.add(newVenue)
       db.session.commit()
+      data = newVenue
       flash('Venue ' + request.form['name'] + ' was successfully listed!')
     except:
       error = True
@@ -222,7 +224,7 @@ def create_venue_submission():
         message.append(field + ' ' + '|'.join(err))
     flash('Something Went Wrong! - ' + str(message))
 
-  return render_template('pages/home.html')
+  return render_template('pages/home.html', data=data)
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
@@ -406,9 +408,9 @@ def create_artist_form():
 
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
-  # TODO: modify data to be the data object returned from db insertion
   form = ArtistForm(request.form, meta={'crsf': False})
   if form.validate():
+    data = {}
     error = False
     try:
       name = form.name.data
@@ -421,12 +423,13 @@ def create_artist_submission():
       website_link = form.website_link.data
       seeking_venue = form.seeking_venue.data
       seeking_description = form.seeking_description.data
-      newArtist = Artist(name=name, city=city, state=state,
+      new_artist = Artist(name=name, city=city, state=state,
       phone=phone, image_link=image_link, facebook_link=facebook_link, 
       genres=genres, website_link=website_link, seeking_venue=seeking_venue, 
       seeking_description=seeking_description)
-      db.session.add(newArtist)
+      db.session.add(new_artist)
       db.session.commit()
+      data = new_artist
       flash('Artist ' + request.form['name'] + ' was successfully listed!')
     except:
       error = True
@@ -442,63 +445,47 @@ def create_artist_submission():
         message.append(field + ' ' + '|'.join(err))
     flash('Something Went Wrong! - ' + str(message))
 
-  return render_template('pages/home.html')
+  return render_template('pages/home.html', data=data)
 
 #  Shows
 
+# Route handler for show browsing
 @app.route('/shows')
 def shows():
-  # displays list of shows at /shows
-  # TODO: replace with real venues data.
-  data=[{
-    "venue_id": 1,
-    "venue_name": "The Musical Hop",
-    "artist_id": 4,
-    "artist_name": "Guns N Petals",
-    "artist_image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80",
-    "start_time": "2019-05-21T21:30:00.000Z"
-  }, {
-    "venue_id": 3,
-    "venue_name": "Park Square Live Music & Coffee",
-    "artist_id": 5,
-    "artist_name": "Matt Quevedo",
-    "artist_image_link": "https://images.unsplash.com/photo-1495223153807-b916f75de8c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
-    "start_time": "2019-06-15T23:00:00.000Z"
-  }, {
-    "venue_id": 3,
-    "venue_name": "Park Square Live Music & Coffee",
-    "artist_id": 6,
-    "artist_name": "The Wild Sax Band",
-    "artist_image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
-    "start_time": "2035-04-01T20:00:00.000Z"
-  }, {
-    "venue_id": 3,
-    "venue_name": "Park Square Live Music & Coffee",
-    "artist_id": 6,
-    "artist_name": "The Wild Sax Band",
-    "artist_image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
-    "start_time": "2035-04-08T20:00:00.000Z"
-  }, {
-    "venue_id": 3,
-    "venue_name": "Park Square Live Music & Coffee",
-    "artist_id": 6,
-    "artist_name": "The Wild Sax Band",
-    "artist_image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
-    "start_time": "2035-04-15T20:00:00.000Z"
-  }]
+  shows = Show.query.all()
+  data = []
+  for show in shows:
+    venue_id = show.venue_id
+    venue = Venue.query.get(venue_id)
+    venue_name = venue.name
+    artist_id = show.artist_id
+    artist = Artist.query.get(artist_id)
+    artist_name = artist.name
+    artist_image = artist.image_link
+    start_time = show.time
+    data.append({
+      "venue_id": venue_id,
+      "venue_name": venue_name,
+      "artist_id": artist_id,
+      "artist_name": artist_name,
+      "artist_image_link": artist_image,
+      "start_time": str(start_time)
+      })
   return render_template('pages/shows.html', shows=data)
 
-# renders form. do not touch.
+# Renders form
 @app.route('/shows/create')
 def create_shows():
   form = ShowForm()
   return render_template('forms/new_show.html', form=form)
 
+# Route handler for Show creation
 @app.route('/shows/create', methods=['POST'])
 def create_show_submission():
   form = ShowForm(request.form, meta={'crsf': False})
   if form.validate():
     error = False
+    data = {}
     try:
       artist_id = form.artist_id.data
       venue_id = form.venue_id.data
@@ -507,10 +494,10 @@ def create_show_submission():
       venue_id=venue_id, time=time)
       db.session.add(new_show)
       db.session.commit()
+      data = new_show
       flash('Show was successfully listed!')
-    except Exception as e:
+    except:
       error = True
-      print(e)
       db.session.rollback()
       traceback.print_exc()
     finally:
@@ -522,16 +509,19 @@ def create_show_submission():
     for field, err in form.errors.items():
         message.append(field + ' ' + '|'.join(err))
     flash('Something Went Wrong! - ' + str(message))
-  return render_template('pages/home.html')
+  return render_template('pages/home.html', data=data)
 
+# 404 Not Found Error
 @app.errorhandler(404)
 def not_found_error(error):
     return render_template('errors/404.html'), 404
 
+# 500 Level is Server Error
 @app.errorhandler(500)
 def server_error(error):
     return render_template('errors/500.html'), 500
 
+# Debugging
 if not app.debug:
     file_handler = FileHandler('error.log')
     file_handler.setFormatter(
@@ -543,6 +533,5 @@ if not app.debug:
     app.logger.info('errors')
 
 # Launch on Default port:
-
 if __name__ == '__main__':
     app.run()
