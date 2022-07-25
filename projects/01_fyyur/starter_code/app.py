@@ -3,16 +3,16 @@
 import traceback
 import dateutil.parser
 import babel
+import logging
+import collections
+import collections.abc
+from forms import *
 from datetime import datetime
-from flask import Flask, render_template, request, flash, redirect, url_for, abort
 from flask_moment import Moment
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-import logging
 from logging import Formatter, FileHandler
-from forms import *
-import collections
-import collections.abc
+from flask import Flask, render_template, request, flash, redirect, url_for, abort
 collections.Callable = collections.abc.Callable
 
 # App Config.
@@ -24,7 +24,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhos
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
 db.create_all()
 
 # Models
@@ -42,12 +41,6 @@ def format_datetime(value, format='medium'):
   return babel.dates.format_datetime(date, format, locale='en')
 
 app.jinja_env.filters['datetime'] = format_datetime
-
-# Controllers.
-
-@app.route('/')
-def index():
-  return render_template('pages/home.html')
 
 # Functions
 
@@ -98,6 +91,12 @@ def upcoming_shows_decorator(shows):
         "start_time": str(show.time)
       })
   return data
+
+# Controllers.
+
+@app.route('/')
+def index():
+  return render_template('pages/home.html')
 
 #  Venues
 
