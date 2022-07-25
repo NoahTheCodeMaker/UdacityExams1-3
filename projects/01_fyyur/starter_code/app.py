@@ -185,21 +185,19 @@ def create_venue_submission():
     error = False
     data = {}
     try:
-      name = form.name.data
-      city = form.city.data
-      state = form.state.data
-      address = form.address.data
-      phone = form.phone.data
-      image_link = form.image_link.data
-      genres = form.genres.data
-      facebook_link = form.facebook_link.data
-      website_link = form.website_link.data
-      seeking_talent = form.seeking_talent.data
-      seeking_description = form.seeking_description.data
-      newVenue = Venue(name=name, city=city, state=state,
-      address=address, phone=phone, image_link=image_link, 
-      facebook_link=facebook_link, genres=genres, website_link=website_link,
-      seeking_talent=seeking_talent, seeking_description=seeking_description)
+      newVenue = Venue(
+        name=form.name.data, 
+        city=form.city.data, 
+        state=form.state.data,
+        address=form.address.data, 
+        phone=form.phone.data, 
+        image_link=form.image_link.data, 
+        facebook_link=form.facebook_link.data,
+        genres=form.genres.data, 
+        website_link=form.website_link.data,
+        seeking_talent=form.seeking_talent.data, 
+        seeking_description=form.seeking_description.data
+      )
       db.session.add(newVenue)
       db.session.commit()
       data = newVenue
@@ -253,8 +251,8 @@ def search_artists():
 
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
-  shows_performed = Show.query.filter_by(artist_id=artist_id).all()
   artist = Artist.query.get(artist_id)
+  shows_performed = Show.query.filter_by(artist_id=artist_id).all()
   data={
     "id": artist.id,
     "name": artist.name,
@@ -326,6 +324,7 @@ def edit_venue(venue_id):
 def edit_venue_submission(venue_id):
   # TODO: take values from the form submitted, and update existing
   # venue record with ID <venue_id> using the new attributes
+  form = VenueForm(request.form, meta={'crsf': False})
   return redirect(url_for('show_venue', venue_id=venue_id))
 
 #  Create Artist
@@ -342,20 +341,18 @@ def create_artist_submission():
     data = {}
     error = False
     try:
-      name = form.name.data
-      city = form.city.data
-      state = form.state.data
-      phone = form.phone.data
-      image_link = form.image_link.data
-      genres = form.genres.data
-      facebook_link = form.facebook_link.data
-      website_link = form.website_link.data
-      seeking_venue = form.seeking_venue.data
-      seeking_description = form.seeking_description.data
-      new_artist = Artist(name=name, city=city, state=state,
-      phone=phone, image_link=image_link, facebook_link=facebook_link, 
-      genres=genres, website_link=website_link, seeking_venue=seeking_venue, 
-      seeking_description=seeking_description)
+      new_artist = Artist(
+        name=form.name.data, 
+        city=form.city.data, 
+        state=form.state.data, 
+        phone=form.phone.data, 
+        image_link=form.image_link.data, 
+        facebook_link=form.facebook_link.data, 
+        genres=form.genres.data, 
+        website_link=form.website_link.data, 
+        seeking_venue=form.seeking_venue.data, 
+        seeking_description=form.seeking_description.data
+      )
       db.session.add(new_artist)
       db.session.commit()
       data = new_artist
@@ -384,21 +381,15 @@ def shows():
   shows = Show.query.all()
   data = []
   for show in shows:
-    venue_id = show.venue_id
-    venue = Venue.query.get(venue_id)
-    venue_name = venue.name
-    artist_id = show.artist_id
-    artist = Artist.query.get(artist_id)
-    artist_name = artist.name
-    artist_image = artist.image_link
-    start_time = show.time
+    venue = Venue.query.get(show.venue_id)
+    artist = Artist.query.get(show.artist_id)
     data.append({
-      "venue_id": venue_id,
-      "venue_name": venue_name,
-      "artist_id": artist_id,
-      "artist_name": artist_name,
-      "artist_image_link": artist_image,
-      "start_time": str(start_time)
+      "venue_id": show.venue_id,
+      "venue_name": venue.name,
+      "artist_id": show.artist_id,
+      "artist_name": artist.name,
+      "artist_image_link": artist.image_link,
+      "start_time": str(show.time)
       })
   return render_template('pages/shows.html', shows=data)
 
@@ -416,11 +407,11 @@ def create_show_submission():
     error = False
     data = {}
     try:
-      artist_id = form.artist_id.data
-      venue_id = form.venue_id.data
-      time = form.start_time.data
-      new_show = Show(artist_id=artist_id, 
-      venue_id=venue_id, time=time)
+      new_show = Show(
+        artist_id=form.artist_id.data, 
+        venue_id=form.venue_id.data, 
+        time=form.start_time.data
+      )
       db.session.add(new_show)
       db.session.commit()
       data = new_show
