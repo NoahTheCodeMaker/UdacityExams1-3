@@ -28,7 +28,7 @@ db.create_all()
 
 # Models
 
-from models import Venue, Artist, Show
+from models import *
 
 # Filters.
 
@@ -131,6 +131,7 @@ def venues():
   }]
   return render_template('pages/venues.html', areas=data)
 
+# Venue Search Route Handler
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
   # TODO: implement search on venues with partial string search. Ensure it is case-insensitive.
@@ -146,6 +147,7 @@ def search_venues():
   }
   return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
+# Views Venues by their ID
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
   shows_at_venue = Show.query.filter_by(venue_id=venue_id).all()
@@ -171,7 +173,6 @@ def show_venue(venue_id):
   return render_template('pages/show_venue.html', venue=data)
 
 #  Create Venue
-
 
 @app.route('/venues/create', methods=['GET'])
 def create_venue_form():
@@ -218,6 +219,7 @@ def create_venue_submission():
 
   return render_template('pages/home.html', data=data)
 
+# Delete Venue
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
   # TODO: Complete this endpoint for taking a venue_id, and using
@@ -234,6 +236,7 @@ def artists():
   data = Artist.query.all()
   return render_template('pages/artists.html', artists=data)
 
+# Artist Search Handler
 @app.route('/artists/search', methods=['POST'])
 def search_artists():
   # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
@@ -249,6 +252,7 @@ def search_artists():
   }
   return render_template('pages/search_artists.html', results=response, search_term=request.form.get('search_term', ''))
 
+# Views Artists by their ID
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
   artist = Artist.query.get(artist_id)
@@ -272,7 +276,7 @@ def show_artist(artist_id):
   }
   return render_template('pages/show_artist.html', artist=data)
 
-#  Update
+#  Update Artists and Venues
 
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
@@ -441,7 +445,7 @@ def not_found_error(error):
 def server_error(error):
     return render_template('errors/500.html'), 500
 
-# Debugging
+# Settings
 if not app.debug:
     file_handler = FileHandler('error.log')
     file_handler.setFormatter(

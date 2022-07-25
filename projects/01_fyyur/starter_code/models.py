@@ -1,6 +1,6 @@
 # 1NF - Single Valued Cells, Entries in column are same type, Rows are Unique
 # 2NF - All attributes dependent on the key
-# 3NF - All fields can be determined Only by the Key in the table and no other column
+# 3NF - All fields can be determined Only by the Key in the table and no other column <- This Project
 # 4NF - No multi-valued dependencies except on the key 
 # 5NF - Cannot describe the table as being the logical result of joining other tables together
 
