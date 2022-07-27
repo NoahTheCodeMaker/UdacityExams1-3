@@ -134,16 +134,19 @@ def venues():
 # Venue Search Route Handler
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
-  # TODO: implement search on venues with partial string search. Ensure it is case-insensitive.
-  # seach for Hop should return "The Musical Hop".
-  # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
+  search_term = request.form.get('search_term', '')
+  results = Venue.query.filter(Venue.name.ilike("%{}%".format(search_term))).all()
+  data = []
+  for result in results:
+    shows_performed = Show.query.filter_by(venue_id=result.id).all()
+    data.append({
+      "id": result.id,
+      "name": result.name,
+      "num_upcoming_shows": count_upcoming_shows(shows_performed)
+    })
   response={
-    "count": 1,
-    "data": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
+    "count": len(results),
+    "data": data
   }
   return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
@@ -252,7 +255,6 @@ def search_artists():
       "name": result.name,
       "num_upcoming_shows": count_upcoming_shows(shows_performed)
     })
-  print(data)
   response={
     "count": len(results),
     "data": data
@@ -285,6 +287,7 @@ def show_artist(artist_id):
 
 #  Update Artists and Venues
 
+# Populates Edit fields with data from the Artist ID 
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
   form = ArtistForm()
@@ -294,6 +297,7 @@ def edit_artist(artist_id):
   form.seeking_venue.data = artist.seeking_venue
   return render_template('forms/edit_artist.html', form=form, artist=artist)
 
+# Changes the Artist's attributes when Edited 
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
   form = ArtistForm(request.form, meta={'crsf': False})
@@ -319,6 +323,7 @@ def edit_artist_submission(artist_id):
 
   return redirect(url_for('show_artist', artist_id=artist_id))
 
+# Populates Edit fields with data from the Venue ID 
 @app.route('/venues/<int:venue_id>/edit', methods=['GET'])
 def edit_venue(venue_id):
   form = VenueForm()
@@ -328,6 +333,7 @@ def edit_venue(venue_id):
   form.seeking_talent.data = venue.seeking_talent
   return render_template('forms/edit_venue.html', form=form, venue=venue)
 
+# Changes the Venue's attributes when Edited
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
   form = VenueForm(request.form, meta={'crsf': False})
