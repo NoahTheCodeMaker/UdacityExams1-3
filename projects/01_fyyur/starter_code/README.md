@@ -59,7 +59,7 @@ npm install bootstrap@3
 
 ## Development Setup
 
-1. **Download Dependencies listed above, a code Editor, git, Postgres, and Python (And Pip)**
+1. **Download Dependencies listed above, a code Editor, git, Postgres, and Python (And Pip). And don't forget to add paths for everything to your PATH**
 
 ```
 pip install virtualenv
