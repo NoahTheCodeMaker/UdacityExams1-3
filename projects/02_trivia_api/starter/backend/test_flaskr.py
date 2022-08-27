@@ -6,7 +6,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flaskr import create_app
 from models import setup_db, Question, Category
 
-
 class TriviaTestCase(unittest.TestCase):
     """This class represents the trivia test case"""
 
@@ -36,7 +35,13 @@ class TriviaTestCase(unittest.TestCase):
     TODO
     Write at least one test for each test for successful operation and for expected errors.
     """
+    def test_404_not_found(self):
+        res = self.client().get('/animalworldgorillatreelionlamppostelephantman')
+        data = json.loads(res.data)
 
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertTrue(data['message'])
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
