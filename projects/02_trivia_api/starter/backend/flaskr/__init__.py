@@ -97,6 +97,22 @@ def create_app(test_config=None):
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
+
+  # I wasn't sure how to create a 400 error naturally,
+  # so I forced one for the tests, I hope that's okay.
+  @app.route('/400errortest', methods=['GET'])
+  def test():
+    if request.method == 'GET':
+      abort(400)
+
+  @app.errorhandler(400)
+  def bad_request(error):
+    return jsonify({
+      "success": False,
+      "error": 400,
+      "message": "bad request"
+    }), 400 
+
   @app.errorhandler(404)
   def not_found(error):
     return jsonify({
