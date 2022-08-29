@@ -33,7 +33,7 @@ class TriviaTestCase(unittest.TestCase):
 
     """
     TODO
-    Write at least one test for each test for successful operation and for expected errors.
+    Write at least one test for each test for successful operation.
     """
 
     def test_400_bad_request(self):
@@ -49,6 +49,22 @@ class TriviaTestCase(unittest.TestCase):
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertTrue(data['message'])
+
+    def test_422_unprocessable_entity(self):
+        res = self.client().get('/422errortest')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertTrue(data['message'])
+
+    def test_500_internal_server_error(self):
+        res = self.client().get('/500errortest')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 500)
         self.assertEqual(data['success'], False)
         self.assertTrue(data['message'])
 
