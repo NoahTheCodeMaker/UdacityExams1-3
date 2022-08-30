@@ -1,8 +1,9 @@
 import os
+import traceback
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-import random
+import random, json
 
 from models import setup_db, Question, Category
 
@@ -26,6 +27,19 @@ def create_app(test_config=None):
   Create an endpoint to handle GET requests 
   for all available categories.
   '''
+  @app.route('/categories/<string:category>', methods=['GET'])
+  def retrieve_from_category(category):
+    try:
+      results = Question.query.filter(Question.category == category).all()
+    except:
+      traceback.print_exc()
+    return jsonify ({
+      "success": True,
+      "category": category,
+      "questions": results,
+      "total_questions": len(results)
+    })
+    
 
   '''
   @TODO: 
