@@ -27,17 +27,26 @@ def create_app(test_config=None):
   Create an endpoint to handle GET requests 
   for all available categories.
   '''
-  @app.route('/categories/<string:category>', methods=['GET'])
+  @app.route('/categories/<int:category>', methods=['GET'])
   def retrieve_from_category(category):
     try:
-      results = Question.query.filter(Question.category == category).all()
+      question_data = []
+      answer_data = []
+      difficulty_data = []
+      results = Question.query.filter(Question.category == str(category)).all()
+      for result in results:
+        question_data.append(result.question)
+        answer_data.append(result.answer)
+        difficulty_data.append(result.difficulty)
     except:
       traceback.print_exc()
     return jsonify ({
       "success": True,
       "category": category,
-      "questions": results,
-      "total_questions": len(results)
+      "questions": question_data,
+      "answers": answer_data,
+      "difficulty": difficulty_data,
+      "total_questions": len(question_data)
     })
     
 
