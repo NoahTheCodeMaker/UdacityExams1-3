@@ -10,43 +10,63 @@ from models import setup_db, Question, Category
 QUESTIONS_PER_PAGE = 10
 
 def create_app(test_config=None):
-  # create and configure the app
+  # Create and configure the app
   app = Flask(__name__)
   setup_db(app)
   
   CORS(app)
 
+  # CORS Set-up
   @app.after_request
   def after_request(response):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
     return response
 
-  '''
-  @TODO: 
-  Create an endpoint to handle GET requests 
-  for all available categories.
-  '''
+  # Categories endpoint giving key-value pairs
+  @app.route('/categories', methods=['GET'])
+  def retrieve_categories():
+    try:
+      categories = {}
+      i = 0
+      results = Category.query.all()
+      for result in results:
+        i = i + 1
+        categories[i] = result.type
+    except:
+      traceback.print_exc()
+    return jsonify ({
+      "categories": categories
+    })
+
+  # Returns questions in a given category
   @app.route('/categories/<int:category>', methods=['GET'])
   def retrieve_from_category(category):
     try:
-      question_data = []
-      answer_data = []
-      difficulty_data = []
+      questions = []
+      answers = []
+      difficulty = []
+      question_object = []
       results = Question.query.filter(Question.category == str(category)).all()
       for result in results:
-        question_data.append(result.question)
-        answer_data.append(result.answer)
-        difficulty_data.append(result.difficulty)
+        questions.append(result.question)
+        answers.append(result.answer)
+        difficulty.append(result.difficulty)
+        question_object.append({
+          "question": result.question,
+          "answer": result.answer,
+          "difficulty": result.difficulty
+        })
     except:
       traceback.print_exc()
     return jsonify ({
       "success": True,
       "category": category,
-      "questions": question_data,
-      "answers": answer_data,
-      "difficulty": difficulty_data,
-      "total_questions": len(question_data)
+      "questions": questions,
+      "answers": answers,
+      "difficulty": difficulty,
+      "questionObject": question_object,
+      "total_questions": len(questions)
     })
     
 
@@ -62,6 +82,20 @@ def create_app(test_config=None):
   ten questions per page and pagination at the bottom of the screen for three pages.
   Clicking on the page numbers should update the questions. 
   '''
+
+  @app.route('/questions', methods=['GET'])
+  def retrieve_questions():
+    try:
+      questions = []
+      query = Question.query.all()
+      for question in query:
+        questions.append({
+          question
+        })
+    except:
+      traceback.print_exc()
+    return jsonify ({
+    })
 
   '''
   @TODO: 
