@@ -13,7 +13,6 @@ def create_app(test_config=None):
   # Create and configure the app
   app = Flask(__name__)
   setup_db(app)
-  
   CORS(app)
 
   # CORS Set-up
@@ -40,33 +39,27 @@ def create_app(test_config=None):
     })
 
   # Returns questions in a given category
-  @app.route('/categories/<int:category>', methods=['GET'])
+  @app.route('/categories/<int:category>/questions', methods=['GET'])
   def retrieve_from_category(category):
     try:
       questions = []
-      answers = []
-      difficulty = []
-      question_object = []
+      category_string = Category.query.filter(Category.id == category).one()
       results = Question.query.filter(Question.category == str(category)).all()
       for result in results:
-        questions.append(result.question)
-        answers.append(result.answer)
-        difficulty.append(result.difficulty)
-        question_object.append({
+        questions.append({
+          "id": result.id,
           "question": result.question,
           "answer": result.answer,
-          "difficulty": result.difficulty
+          "difficulty": result.difficulty,
+          "category": result.category
         })
     except:
       traceback.print_exc()
     return jsonify ({
       "success": True,
-      "category": category,
       "questions": questions,
-      "answers": answers,
-      "difficulty": difficulty,
-      "questionObject": question_object,
-      "total_questions": len(questions)
+      "total_questions": len(questions),
+      "current_category": category_string.type
     })
     
 
@@ -83,19 +76,19 @@ def create_app(test_config=None):
   Clicking on the page numbers should update the questions. 
   '''
 
-  @app.route('/questions', methods=['GET'])
-  def retrieve_questions():
-    try:
-      questions = []
-      query = Question.query.all()
-      for question in query:
-        questions.append({
-          question
-        })
-    except:
-      traceback.print_exc()
-    return jsonify ({
-    })
+  # @app.route('/questions', methods=['GET'])
+  # def retrieve_questions():
+  #   try:
+  #     questions = []
+  #     query = Question.query.all()
+  #     for question in query:
+  #       questions.append({
+  #         question
+  #       })
+  #   except:
+  #     traceback.print_exc()
+  #   return jsonify ({
+  #   })
 
   '''
   @TODO: 
