@@ -36,6 +36,7 @@ class TriviaTestCase(unittest.TestCase):
     Write at least one test for each test for successful operation.
     """
 
+    # Endpoint testing
     def test_categories_endpoint(self):
         res = self.client().get('/categories/4')
         data = json.loads(res.data)
@@ -43,6 +44,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['questions'])
 
+    # Error tests
     def test_400_bad_request(self):
         res = self.client().get('/400errortest')
         data = json.loads(res.data)
