@@ -2,6 +2,7 @@ import os
 import traceback
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import sessionmaker
 from flask_cors import CORS
 import random, json
 
@@ -14,6 +15,8 @@ def create_app(test_config=None):
   app = Flask(__name__)
   setup_db(app)
   CORS(app)
+  Session = sessionmaker(bind = db.engine)
+  session = Session()
 
   # CORS Set-up
   @app.after_request
@@ -22,16 +25,21 @@ def create_app(test_config=None):
     response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
     return response
 
+  # Creates Categories Object
+  def categories_creator():
+    categories = {}
+    i = 0
+    results = Category.query.all()
+    for result in results:
+      i = i + 1
+      categories[i] = result.type
+    return categories
+
   # Categories endpoint giving key-value pairs
   @app.route('/categories', methods=['GET'])
   def retrieve_categories():
     try:
-      categories = {}
-      i = 0
-      results = Category.query.all()
-      for result in results:
-        i = i + 1
-        categories[i] = result.type
+      categories = categories_creator()
     except:
       traceback.print_exc()
     return jsonify ({
@@ -61,34 +69,32 @@ def create_app(test_config=None):
       "total_questions": len(questions),
       "current_category": category_string.type
     })
-    
 
-  '''
-  @TODO: 
-  Create an endpoint to handle GET requests for questions, 
-  including pagination (every 10 questions). 
-  This endpoint should return a list of questions, 
-  number of total questions, current category, categories. 
-
-  TEST: At this point, when you start the application
-  you should see questions and categories generated,
-  ten questions per page and pagination at the bottom of the screen for three pages.
-  Clicking on the page numbers should update the questions. 
-  '''
-
-  # @app.route('/questions', methods=['GET'])
-  # def retrieve_questions():
-  #   try:
-  #     questions = []
-  #     query = Question.query.all()
-  #     for question in query:
-  #       questions.append({
-  #         question
-  #       })
-  #   except:
-  #     traceback.print_exc()
-  #   return jsonify ({
-  #   })
+  # Returns paginated questions
+  @app.route('/questions', methods=['GET'])
+  def retrieve_questions():
+    try:
+      categories = categories_creator()
+      page = request.args.get("page", 1, type=int)
+      questions = []
+      query = Question.query.paginate(page=page , per_page=10)
+      for question in query.items:
+        questions.append({
+          "id": question.id,
+          "question": question.question,
+          "answer": question.answer,
+          "difficulty": question.difficulty,
+          "category": question.category
+        })
+    except:
+      traceback.print_exc()
+    return jsonify ({
+      "success": True,
+      "questions": questions,
+      "total_questions": session.query(Question).count(),
+      "categories": categories,
+      "current_category": "All"
+    })
 
   # '''
   # @TODO: 
