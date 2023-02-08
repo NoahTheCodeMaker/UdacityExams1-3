@@ -43,6 +43,7 @@ def create_app(test_config=None):
     except:
       traceback.print_exc()
     return jsonify ({
+      "success": True,
       "categories": categories
     })
 
