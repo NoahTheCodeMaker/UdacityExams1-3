@@ -20,11 +20,11 @@ class TriviaTestCase(unittest.TestCase):
         self.database_path = 'postgresql+psycopg2://{}:{}@{}/{}'.format(DB_USER, DB_PASSWORD, DB_HOST, DB_NAME)
         setup_db(self.app, self.database_path)
 
-        # binds the app to the current context
+        # Binds the app to the current context
         with self.app.app_context():
             self.db = SQLAlchemy()
             self.db.init_app(self.app)
-            # create all tables
+            # Create all tables
             self.db.create_all()
     
     def tearDown(self):
@@ -38,11 +38,33 @@ class TriviaTestCase(unittest.TestCase):
 
     # Endpoint testing
     def test_categories_endpoint(self):
-        res = self.client().get('/categories/4')
+        res = self.client().get('/categories')
         data = json.loads(res.data)
 
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['categories'])
+
+    def test_category_selector_endpoint(self):
+        res = self.client().get('/categories/1/questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(data['questions'])
+        self.assertTrue(data['total_questions'])
+        self.assertTrue(data['current_category'])
+
+    def test_question_pagination_endpoint(self):
+        res = self.client().get('questions', json={'page': 1})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['questions'])
+        self.assertTrue(data['total_questions'])
+        self.assertTrue(data['categories'])
+        self.assertTrue(data['current_category'])
 
     # Error tests
     def test_400_bad_request(self):
