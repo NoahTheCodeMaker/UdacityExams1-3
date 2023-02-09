@@ -37,6 +37,8 @@ class TriviaTestCase(unittest.TestCase):
     """
 
     # Endpoint testing
+
+    # Testing for category object
     def test_categories_endpoint(self):
         res = self.client().get('/categories')
         data = json.loads(res.data)
@@ -45,6 +47,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['categories'])
 
+    # Testing for questions by category
     def test_category_selector_endpoint(self):
         res = self.client().get('/categories/1/questions')
         data = json.loads(res.data)
@@ -55,6 +58,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['total_questions'])
         self.assertTrue(data['current_category'])
 
+    # Testing for pagination endpoint
     def test_question_pagination_endpoint(self):
         res = self.client().get('questions', json={'page': 1})
         data = json.loads(res.data)
@@ -66,6 +70,31 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['categories'])
         self.assertTrue(data['current_category'])
 
+    # Extensive test for question deletion endpoint,
+    # be sure to use the psql file so that there is 
+    # a question with id 9 for this test, or it will fail.
+    def test_question_delete_endpoint(self):
+        res1 = self.client().get('questions/9')
+        data1 = json.loads(res1.data)
+        res2 = self.client().delete('questions/9')
+        data2 = json.loads(res2.data)
+        res3 = self.client().get('/questions/9')
+        data3 = json.loads(res3.data)
+
+        self.assertEqual(res1.status_code, 200)
+        self.assertEqual(data1['success'], True)
+        self.assertTrue(data1['id'])
+        self.assertTrue(data1['question'])
+        self.assertTrue(data1['answer'])
+        self.assertTrue(data1['category'])
+        self.assertTrue(data1['difficulty'])
+        self.assertEqual(res2.status_code, 200)
+        self.assertEqual(data2['success'], True)
+        self.assertTrue(data2['question_id'])
+        self.assertEqual(res3.status_code, 200)
+        self.assertEqual(data3['success'], True)
+        self.assertTrue(data3['error_message'])
+    
     # Error tests
     def test_400_bad_request(self):
         res = self.client().get('/400errortest')
