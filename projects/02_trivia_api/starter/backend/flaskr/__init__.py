@@ -97,29 +97,27 @@ def create_app(test_config=None):
       "current_category": "All"
     })
 
-  # '''
-  # @TODO: 
-  # Create an endpoint to DELETE question using a question ID. 
-
-  # TEST: When you click the trash icon next to a question, the question will be removed.
-  # This removal will persist in the database and when you refresh the page. 
-  # '''
-
-  # # Deletes a question with the given question id and DELETE method
-  # @app.route('/questions/<int:id>', methods=['DELETE'])
-  # def delete_question(id):
-  #   try:
-  #     Question.query.filter_by(id=id).delete()
-  #     db.session.commit()
-  #   except:
-  #     traceback.print_exc()
-  #     db.session.rollback()
-  #   finally:
-  #     db.session.close()
-  #     return jsonify ({
-  #     "success": True,
-  #     "question_id": id
-  #     })
+  # Returns single question
+  @app.route('/questions/<int:id>', methods=['GET'])
+  def retrieve_single_question(id):
+    try:
+      question = Question.query.filter(Question.id == id).all()
+      if len(question) >= 1:
+        return jsonify ({
+        "success": True,
+        "id": question[0].id,
+        "question": question[0].question,
+        "answer": question[0].answer,
+        "category": question[0].category,
+        "difficulty": question[0].difficulty
+        })
+      else:
+        return jsonify ({
+          "success": True,
+          "error_message": "Question does not exist or has been deleted"
+        })
+    except:
+      traceback.print_exc()
 
   '''
   @TODO: 
@@ -132,6 +130,22 @@ def create_app(test_config=None):
   of the questions list in the "List" tab.  
   '''
 
+  # Deletes a question with the given question id and DELETE method
+  @app.route('/questions/<int:id>', methods=['DELETE'])
+  def delete_question(id):
+    try:
+      Question.query.filter_by(id=id).delete()
+      db.session.commit()
+    except:
+      traceback.print_exc()
+      db.session.rollback()
+    finally:
+      db.session.close()
+      return jsonify ({
+      "success": True,
+      "question_id": id
+      })
+
   '''
   @TODO: 
   Create a POST endpoint to get questions based on a search term. 
@@ -141,15 +155,6 @@ def create_app(test_config=None):
   TEST: Search by any phrase. The questions list will update to include 
   only question that include that string within their question. 
   Try using the word "title" to start. 
-  '''
-
-  '''
-  @TODO: 
-  Create a GET endpoint to get questions based on category. 
-
-  TEST: In the "List" tab / main screen, clicking on one of the 
-  categories in the left column will cause only questions of that 
-  category to be shown. 
   '''
 
 
