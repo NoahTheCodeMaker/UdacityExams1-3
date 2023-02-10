@@ -170,7 +170,17 @@ def create_app(test_config=None):
   Try using the word "title" to start. 
   '''
 
-
+  @app.route('/questionsearch', methods=['POST']) 
+  def search_questions():
+    try:
+      Question.query()
+    except:
+      traceback.print_exc()
+    return jsonify ({
+      "success": True,
+      "question_id": id
+      })
+  
   '''
   @TODO: 
   Create a POST endpoint to get questions to play the quiz. 
@@ -182,6 +192,20 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
+
+  @app.route('/quizzes', methods=['POST']) 
+  def play_quizzes():
+    try:
+      Question.query()
+    except:
+      traceback.print_exc()
+    return jsonify ({
+      "success": True,
+      "question_id": id
+      })
+      
+
+  # Error Handlers
 
   @app.route('/400errortest', methods=['GET'])
   def test400():
