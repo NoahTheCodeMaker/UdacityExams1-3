@@ -63,6 +63,7 @@ One note before you delve into your tasks: for each endpoint, you are expected t
 
 5. Create an endpoint to POST a new question, which will require the question and answer text, category, and difficulty score. 
 
+Test $ curl -d '{"question":"Who am I", "answer":"Me", "category":"1", "difficulty":"1"}' -H "Content-Type: application/json" -X POST http://127.0.0.1:5000/questions
 
 6. Create a POST endpoint to get questions based on category. 
 
