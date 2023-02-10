@@ -88,12 +88,37 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data1['answer'])
         self.assertTrue(data1['category'])
         self.assertTrue(data1['difficulty'])
+
         self.assertEqual(res2.status_code, 200)
         self.assertEqual(data2['success'], True)
         self.assertTrue(data2['question_id'])
+
         self.assertEqual(res3.status_code, 200)
         self.assertEqual(data3['success'], True)
         self.assertTrue(data3['error_message'])
+
+    # Test for the creation of a question
+    def test_question_create_endpoint(self):
+        res1 = self.client().post('/questions', json=
+        {'question':'testing question', 'answer':'testing answer',
+         'difficulty': '2', 'category': '3'})
+        data1 = json.loads(res1.data)
+        res2 = self.client().get('/questions/{}'.format(data1['question_id']))
+        data2 = json.loads(res2.data)
+
+        self.assertEqual(res1.status_code, 200)
+        self.assertEqual(data1['success'], True)
+        self.assertTrue(data1['question_id'])
+
+        self.assertEqual(res2.status_code, 200)
+        self.assertEqual(data2['success'], True)
+        self.assertTrue(data2['id'])
+        self.assertTrue(data2['question'])
+        self.assertTrue(data2['answer'])
+        self.assertTrue(data2['category'])
+        self.assertTrue(data2['difficulty'])
+        self.assertEqual(data2['id'], data1['question_id'])
+
     
     # Error tests
     def test_400_bad_request(self):
