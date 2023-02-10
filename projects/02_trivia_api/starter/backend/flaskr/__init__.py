@@ -123,26 +123,25 @@ def create_app(test_config=None):
   @app.route('/questions', methods=['POST'])
   def make_question():
     try:
-      question = request.args.get("question")
-      answer = request.args.get("answer")
-      difficulty = request.args.get("difficulty")
-      category = request.args.get("category")
+      question = request.get_json().get("question")
+      answer = request.get_json().get("answer")
+      difficulty = request.get_json().get('difficulty')
+      category = request.get_json().get("category")
       new_question = Question(
         question=question,
         answer=answer,
         category=category,
-        difficulty=int(difficulty)
+        difficulty=difficulty
       )
       db.session.add(new_question)
       db.session.commit()
-      return jsonify({
-        "success": True,
-        "question": question
-        })
     except:
       db.session.rollback()
       traceback.print_exc()
-    return jsonify({"success": True})
+    return jsonify({
+      "success": True,
+      "question_id": new_question.id
+      })
 
   # Deletes a question with the given question id and DELETE method
   @app.route('/questions/<int:id>', methods=['DELETE'])
