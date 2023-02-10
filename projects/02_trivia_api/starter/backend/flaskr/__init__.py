@@ -119,16 +119,30 @@ def create_app(test_config=None):
     except:
       traceback.print_exc()
 
-  '''
-  @TODO: 
-  Create an endpoint to POST a new question, 
-  which will require the question and answer text, 
-  category, and difficulty score.
-
-  TEST: When you submit a question on the "Add" tab, 
-  the form will clear and the question will appear at the end of the last page
-  of the questions list in the "List" tab.  
-  '''
+  # Creates new question in the database using given data
+  @app.route('/questions', methods=['POST'])
+  def make_question():
+    try:
+      question = request.args.get("question")
+      answer = request.args.get("answer")
+      difficulty = request.args.get("difficulty")
+      category = request.args.get("category")
+      new_question = Question(
+        question=question,
+        answer=answer,
+        category=category,
+        difficulty=int(difficulty)
+      )
+      db.session.add(new_question)
+      db.session.commit()
+      return jsonify({
+        "success": True,
+        "question": question
+        })
+    except:
+      db.session.rollback()
+      traceback.print_exc()
+    return jsonify({"success": True})
 
   # Deletes a question with the given question id and DELETE method
   @app.route('/questions/<int:id>', methods=['DELETE'])
