@@ -9,8 +9,10 @@ import random, json
 from models import db, setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
+QUESTION_ERROR = "Question does not exist or has been deleted"
 
 def create_app(test_config=None):
+  
   # Create and configure the app
   app = Flask(__name__)
   setup_db(app)
@@ -114,7 +116,7 @@ def create_app(test_config=None):
       else:
         return jsonify ({
           "success": True,
-          "error_message": "Question does not exist or has been deleted"
+          "error_message": QUESTION_ERROR
         })
     except:
       traceback.print_exc()
