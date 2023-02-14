@@ -119,6 +119,8 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data2['difficulty'])
         self.assertEqual(data2['id'], data1['question_id'])
 
+    # Test for search endpoint, only works after 
+    # using the trivia.psql file before starting
     def test_question_search_endpoint(self):
         res = self.client().post('questionsearch', json={'searchTerm': 'testing question'})
         data = json.loads(res.data)
