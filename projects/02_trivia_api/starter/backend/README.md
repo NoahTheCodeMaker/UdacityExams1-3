@@ -105,8 +105,8 @@ GET '/api/v1.0/categories'
 ## Testing
 To run the tests, run
 ```
-dropdb trivia_test
-createdb trivia_test
-psql trivia_test < trivia.psql
-python test_flaskr.py
+dropdb trivia_test (In Windows on Visual Studio Code I had to use dropdb.exe -U postgres trivia_test)
+createdb trivia_test (In Windows on Visual Studio Code I had to use createdb.exe -U postgres trivia_test)
+psql trivia_test < trivia.psql (In Windows on Visual Studio Code I had to use psql.exe -U postgres trivia_test < trivia.psql)
+python test_flaskr.py (This works fine)
 ```
