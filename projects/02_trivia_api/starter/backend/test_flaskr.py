@@ -119,6 +119,15 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data2['difficulty'])
         self.assertEqual(data2['id'], data1['question_id'])
 
+    def test_question_search_endpoint(self):
+        res = self.client().post('questionsearch', json={'searchTerm': 'testing question'})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['total_questions'], 1)
+        self.assertTrue(data['questions'])
+        self.assertTrue(data['current_category'])
     
     # Error tests
     def test_400_bad_request(self):
