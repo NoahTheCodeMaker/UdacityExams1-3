@@ -99,7 +99,7 @@ def create_app(test_config=None):
       "current_category": "All"
     })
 
-  # Returns single question
+  # Returns single question by ID
   @app.route('/questions/<int:id>', methods=['GET'])
   def retrieve_single_question(id):
     try:
@@ -125,10 +125,10 @@ def create_app(test_config=None):
   @app.route('/questions', methods=['POST'])
   def make_question():
     try:
-      question = request.get_json().get("question")
-      answer = request.get_json().get("answer")
-      difficulty = request.get_json().get('difficulty')
-      category = request.get_json().get("category")
+      question = request.get_json().get("question", None)
+      answer = request.get_json().get("answer", None)
+      difficulty = request.get_json().get('difficulty', None)
+      category = request.get_json().get("category", None)
       new_question = Question(
         question=question,
         answer=answer,
@@ -166,7 +166,7 @@ def create_app(test_config=None):
   def search_questions():
     try:
       questions = []
-      question = request.get_json().get("searchTerm")
+      question = request.get_json().get("searchTerm", None)
       results = Question.query.filter(Question.question.ilike("%{}%".format(question))).all()
       for result in results:
         questions.append({
@@ -185,29 +185,46 @@ def create_app(test_config=None):
       "current_category": "All"
       })
   
-  '''
-  @TODO: 
-  Create a POST endpoint to get questions to play the quiz. 
-  This endpoint should take category and previous question parameters 
-  and return a random questions within the given category, 
-  if provided, and that is not one of the previous questions. 
-
-  TEST: In the "Play" tab, after a user selects "All" or a category,
-  one question at a time is displayed, the user is allowed to answer
-  and shown whether they were correct or not. 
-  '''
-
+  # Quiz endpoint for selecting random questions
   @app.route('/quizzes', methods=['POST']) 
   def play_quizzes():
     try:
-      Question.query()
+      quiz_category = request.get_json().get("quiz_category", None)
+      previous_questions = request.get_json().get("previous_questions", [])
+
+      category_id = quiz_category["id"]
+      current_category = Category.query.filter_by(id=category_id).all()
+      if current_category is None:
+        abort(404)
+
+      if category_id == 0:
+        question_bank = Question.query.all()
+      else:
+        question_bank = Question.query.filter_by(category=str(category_id)).order_by(Question.id).all()
+      if len(question_bank) == 0:
+        abort(422)
+
+      final_questions = []
+      for question in question_bank:
+        if question.id not in previous_questions:
+          final_questions.append(question.format())
+      
+      if len(final_questions) == 0:
+        return jsonify({
+          "success": True
+        })
+      else:
+        current_question = random.choice(final_questions)
+        previous_questions.append(current_question["id"])
+
+        return jsonify({
+          "success": True,
+          "question": current_question
+        })
+
     except:
       traceback.print_exc()
-    return jsonify ({
-      "success": True,
-      "question_id": id
-      })
-      
+      abort(422)
 
   # Error Handlers
 
