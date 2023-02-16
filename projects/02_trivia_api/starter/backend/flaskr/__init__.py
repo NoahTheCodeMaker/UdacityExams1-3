@@ -118,7 +118,7 @@ def create_app(test_config=None):
         })
       else:
         return jsonify ({
-          "success": True,
+          "success": False,
           "error_message": QUESTION_ERROR
         })
     except:
