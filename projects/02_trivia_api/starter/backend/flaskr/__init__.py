@@ -233,7 +233,7 @@ def create_app(test_config=None):
       traceback.print_exc()
       abort(422)
 
-  # Error Handlers
+  # Forcing errors for error tests
 
   @app.route('/400errortest', methods=['GET'])
   def test400():
@@ -249,6 +249,8 @@ def create_app(test_config=None):
   def test500():
     if request.method == 'GET':
       abort(500)
+
+  # Error handlers
 
   @app.errorhandler(400)
   def bad_request(error):
