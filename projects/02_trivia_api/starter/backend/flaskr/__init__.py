@@ -44,6 +44,7 @@ def create_app(test_config=None):
       categories = categories_creator()
     except:
       traceback.print_exc()
+      abort(500)
     return jsonify ({
       "success": True,
       "categories": categories
@@ -66,6 +67,7 @@ def create_app(test_config=None):
         })
     except:
       traceback.print_exc()
+      abort(404)
     return jsonify ({
       "success": True,
       "questions": questions,
@@ -91,6 +93,7 @@ def create_app(test_config=None):
         })
     except:
       traceback.print_exc()
+      abort(404)
     return jsonify ({
       "success": True,
       "questions": questions,
@@ -120,6 +123,7 @@ def create_app(test_config=None):
         })
     except:
       traceback.print_exc()
+      abort(404)
 
   # Creates new question in the database using given data
   @app.route('/questions', methods=['POST'])
@@ -140,6 +144,7 @@ def create_app(test_config=None):
     except:
       db.session.rollback()
       traceback.print_exc()
+      abort(422)
     return jsonify({
       "success": True,
       "question_id": new_question.id
@@ -154,6 +159,7 @@ def create_app(test_config=None):
     except:
       traceback.print_exc()
       db.session.rollback()
+      abort(422)
     finally:
       db.session.close()
       return jsonify ({
@@ -178,6 +184,7 @@ def create_app(test_config=None):
         })
     except:
       traceback.print_exc()
+      abort(422)
     return jsonify ({
       "success": True,
       "questions": questions,
