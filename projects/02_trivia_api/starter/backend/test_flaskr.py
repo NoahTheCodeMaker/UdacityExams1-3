@@ -31,11 +31,6 @@ class TriviaTestCase(unittest.TestCase):
         """Executed after reach test"""
         pass
 
-    """
-    TODO
-    Write at least one test for each test for successful operation.
-    """
-
     # Endpoint testing
 
     # Testing for category object
@@ -60,7 +55,7 @@ class TriviaTestCase(unittest.TestCase):
 
     # Testing for pagination endpoint
     def test_question_pagination_endpoint(self):
-        res = self.client().get('questions', json={'page': 1})
+        res = self.client().get('/questions', json={'page': 1})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -74,9 +69,9 @@ class TriviaTestCase(unittest.TestCase):
     # be sure to use the psql file so that there is 
     # a question with id 9 for this test, or it will fail.
     def test_question_delete_endpoint(self):
-        res1 = self.client().get('questions/9')
+        res1 = self.client().get('/questions/9')
         data1 = json.loads(res1.data)
-        res2 = self.client().delete('questions/9')
+        res2 = self.client().delete('/questions/9')
         data2 = json.loads(res2.data)
         res3 = self.client().get('/questions/9')
         data3 = json.loads(res3.data)
@@ -122,7 +117,7 @@ class TriviaTestCase(unittest.TestCase):
     # Test for search endpoint, only works after 
     # using the trivia.psql file before starting
     def test_question_search_endpoint(self):
-        res = self.client().post('questionsearch', json={'searchTerm': 'testing question'})
+        res = self.client().post('/questionsearch', json={'searchTerm': 'testing question'})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -130,6 +125,21 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['total_questions'], 1)
         self.assertTrue(data['questions'])
         self.assertTrue(data['current_category'])
+
+    # Test for the quizzes endpoint
+    def test_quizzes_endpoint(self):
+        res = self.client().post(
+            '/quizzes', 
+            json={
+            'quiz_category': {"type": "sports","id": 6},
+            'previous_questions': [10]
+        })
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data["question"])
+        self.assertEqual(data['question']["id"], 11)
     
     # Error tests
     def test_400_bad_request(self):
