@@ -9,7 +9,6 @@ import random, json
 from models import db, setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
-QUESTION_ERROR = "Question does not exist or has been deleted"
 
 def create_app(test_config=None):
   
@@ -115,12 +114,9 @@ def create_app(test_config=None):
         "answer": question[0].answer,
         "category": question[0].category,
         "difficulty": question[0].difficulty
-        })
+      })
       else:
-        return jsonify ({
-          "success": False,
-          "error_message": QUESTION_ERROR
-        })
+        abort(404)
     except:
       traceback.print_exc()
       abort(404)
@@ -154,18 +150,20 @@ def create_app(test_config=None):
   @app.route('/questions/<int:id>', methods=['DELETE'])
   def delete_question(id):
     try:
-      Question.query.filter_by(id=id).delete()
+      question = Question.query.filter_by(id=id).one()
+      question.delete()
       db.session.commit()
-    except:
-      traceback.print_exc()
-      db.session.rollback()
-      abort(422)
-    finally:
-      db.session.close()
       return jsonify ({
       "success": True,
       "question_id": id
       })
+    except:
+      traceback.print_exc()
+      db.session.rollback()
+      abort(404)
+    finally:
+      db.session.close()
+    
 
   # Question Search endpoint
   @app.route('/questionsearch', methods=['POST']) 
