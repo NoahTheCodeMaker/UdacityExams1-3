@@ -21,7 +21,7 @@ There are no API Keys or Authentication in the apps current state.
 ```
 
 # Error Messages
-The error codes 400, 404, 422, and 500 are the error codes most expected to occur in this app.
+The error codes 400, 404, 405, 422, and 500 are the error codes most expected to occur in this app.
 Keeping this in mind, here are the returned json responses for each code so you can expect them.
 
 Response for Error Code 400
@@ -35,6 +35,12 @@ Response for Error Code 404
   "success": False,
   "error": 404,
   "message": "resource not found"
+}
+Response for Error Code 405
+{
+  "success": False,
+  "error": 405,
+  "message": "method not allowed"
 }
 Response for Error Code 422
 {
