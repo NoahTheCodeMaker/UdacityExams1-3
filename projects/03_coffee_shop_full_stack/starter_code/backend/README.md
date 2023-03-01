@@ -84,3 +84,5 @@ There are `@TODO` comments throughout the `./backend/src`. We recommend tackling
 
 1. `./src/auth/auth.py`
 2. `./src/api.py`
+
+https://dev-y4dtlj6thn26xy28.us.auth0.com/authorize?audience=http://127.0.0.1:5000/&response_type=token&client_id=J47SjndQpDdq9aXNEWGGDezCWzbiXru0&redirect_uri=http://127.0.0.1:5000/
