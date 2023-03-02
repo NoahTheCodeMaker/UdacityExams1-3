@@ -1,4 +1,5 @@
 import os
+import traceback
 from flask import Flask, request, jsonify, abort
 from sqlalchemy import exc
 import json
@@ -12,33 +13,47 @@ setup_db(app)
 CORS(app)
 
 '''
-@TODO uncomment the following line to initialize the datbase
+!! Uncomment the line below these comments to initialize the datbase
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 !! Running this function will add one
 '''
 # db_drop_and_create_all()
 
-# ROUTES
-'''
-@TODO implement endpoint
-    GET /drinks
-        it should be a public endpoint
-        it should contain only the drink.short() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
-        or appropriate status code indicating reason for failure
-'''
+## ROUTES
 
+# Public drink viewing endpoint
+@app.route('/drinks', methods=['GET'])
+def drinks_viewer():
+    try:
+        drinks = []
+        drinks_query  = Drink.query.all()
+        for drink in drinks_query:
+            drinks.append(drink.short())
+        return jsonify ({
+            "success": True,
+            "drinks": drinks
+        })
+    except:
+        traceback.print_exc()
+        abort(500)
 
-'''
-@TODO implement endpoint
-    GET /drinks-detail
-        it should require the 'get:drinks-detail' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
-        or appropriate status code indicating reason for failure
-'''
-
+# Barista endpoint for viewing drink details
+@app.route('/drinks-detail', methods=['GET'])
+@requires_auth(permission='get:drinks-detail')
+def drinks_detail_viewer(payload):
+    try:
+        drinks = []
+        drinks_query  = Drink.query.all()
+        for drink in drinks_query:
+            drinks.append(drink.long())
+        return jsonify ({
+            "success": True,
+            "drinks": drinks
+        })
+    except:
+        traceback.print_exc()
+        abort(500)
 
 '''
 @TODO implement endpoint
@@ -49,7 +64,10 @@ CORS(app)
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
-
+@app.route('/drinks', methods=['POST'])
+@requires_auth(permission='post:drinks')
+def create_drinks(payload):
+    request.get_json().get("", None)
 
 '''
 @TODO implement endpoint
