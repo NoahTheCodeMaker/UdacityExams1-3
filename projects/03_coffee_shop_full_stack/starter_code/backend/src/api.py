@@ -15,6 +15,7 @@ CORS(app)
 !! the database, running this function will add one.
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
+!! Comment this line after the first run or no data will keep
 '''
 
 db_drop_and_create_all()
