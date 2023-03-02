@@ -14,3 +14,6 @@ Thumbs.db
 
 .github/**
 projects/03_coffee_shop_full_stack/starter_code/backend/src/database/database.db
+projects/03_coffee_shop_full_stack/starter_code/backend/src/package-lock.json
+projects/03_coffee_shop_full_stack/starter_code/frontend/package-lock.json
+.gitignore
